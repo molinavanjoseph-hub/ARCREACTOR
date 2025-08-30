@@ -37,7 +37,7 @@ const updateProfile = () => {
             
             isEditProfileShown.value = false
 
-            // SweetAlert Success Notification
+           
             Swal.fire({
                 icon: 'success',
                 title: 'Profile updated successfully!',
@@ -386,5 +386,4 @@ onUnmounted(() => {
             </div>
         </div>
     </section>
-    
 </template>
