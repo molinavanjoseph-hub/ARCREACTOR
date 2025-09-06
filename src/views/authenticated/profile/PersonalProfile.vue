@@ -13,16 +13,23 @@ const userDetailsForm = ref({
     about: '',
 })
 
-const openEditProfile = () => {
-    if (authStore.me) {
-        userDetailsForm.value = {
-            firstName: authStore.me.firstName || '',
-            lastName: authStore.me.lastName || '',
-            program: authStore.me.program || '',
-            email: authStore.me.email || '',
-            about: authStore.me.about || '',
-        }
+const loadUserDetails = () => {
+    const saved = localStorage.getItem('userProfile')
+    if (saved) {
+        const profile = JSON.parse(saved)
+        authStore.me = { ...authStore.me, ...profile }
     }
+    userDetailsForm.value = {
+        firstName: authStore.me?.firstName || '',
+        lastName: authStore.me?.lastName || '',
+        program: authStore.me?.program || '',
+        email: authStore.me?.email || '',
+        about: authStore.me?.about || '',
+    }
+}
+
+const openEditProfile = () => {
+    loadUserDetails()
     isEditProfileShown.value = true
 }
 
@@ -34,10 +41,12 @@ const updateProfile = () => {
             authStore.me.program = userDetailsForm.value.program
             authStore.me.email = userDetailsForm.value.email
             authStore.me.about = userDetailsForm.value.about
-            
+
+            // Save updated profile to localStorage
+            localStorage.setItem('userProfile', JSON.stringify(authStore.me))
+
             isEditProfileShown.value = false
 
-           
             Swal.fire({
                 icon: 'success',
                 title: 'Profile updated successfully!',
@@ -57,6 +66,10 @@ const validateForm = () => {
     }
     return true
 }
+
+onMounted(() => {
+    loadUserDetails()
+})
 
 onUnmounted(() => {
     console.log('Bye bye..')
@@ -295,95 +308,44 @@ onUnmounted(() => {
                         v-model="userDetailsForm.program"
                         class="w-full px-3 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
                     >
-                        <option disabled value="">Select your program</option>
-                        <option value="computer_science">Computer Science</option>
-                        <option value="information_technology">Information Technology</option> 
-                        <option value="business_administration">Business Administration</option> 
-                        <option value="accounting">Accounting</option> 
-                        <option value="psychology">Psychology</option> 
-                        <option value="education">Education</option> 
-                        <option value="nursing">Nursing</option> 
-                        <option value="engineering">Engineering</option> 
-                        <option value="hospitality_management">Hospitality Management</option> 
-                        <option value="mass_communication">Mass Communication</option> 
-                        <option value="biology">Biology</option> <option value="mathematics">Mathematics</option> 
-                        <option value="economics">Economics</option> <option value="political_science">Political Science</option> 
-                        <option value="public_administration">Public Administration</option> <option value="criminology">Criminology</option> 
-                        <option value="architecture">Architecture</option> 
-                        <option value="fine_arts">Fine Arts</option> 
-                        <option value="pharmacy">Pharmacy</option> 
-                        <option value="social_work">Social Work</option> 
+                        <option disabled >Select your program</option>
+                            <option value="computer_science">Computer Science</option>
+                            <option value="Information_Technology">Information Technology</option>
+                            <option value="business_administration">Business Administration</option>
+                            <option value="accounting">Accounting</option>
+                            <option value="psychology">Psychology</option>
+                            <option value="education">Education</option>
+                            <option value="nursing">Nursing</option>
+                            <option value="engineering">Engineering</option>
+                            <option value="hospitality_management">Hospitality Management</option>
+                            <option value="computer_science">Computer Science</option>
+                            <option value="information_technology">Information Technology</option>
+                            <option value="business_administration">Business Administration</option>
+                            <option value="accounting">Accounting</option>
+                            
+                           
+                            
+                            
                     </select>
                 </div>
-               
+
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Email</label>
-                    <input
-                        v-model="userDetailsForm.email"
-                        type="email"
-                        class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        required
-                    />
-                </div>
- 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">About Me</label>
+                    <label class="block text-sm font-medium text-gray-700">About</label>
                     <textarea
                         v-model="userDetailsForm.about"
+                        rows="3"
                         class="w-full mt-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     ></textarea>
                 </div>
-
-                <button
-                    type="submit"
-                    class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-                >
-                    Update Profile
-                </button>
+                <div class="flex justify-end">
+                    <button
+                        type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                    >
+                        Save Changes
+                    </button>
+                </div>
             </form>
         </div>
-        
     </div>
-     <section class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-lg font-semibold mb-4">Friends</h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <!-- Friend card -->
-            <div class="flex flex-col items-center text-center">
-                <img
-                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=facearea&facepad=3&w=64&h=64&q=80"
-                    alt="Friend avatar"
-                    class="w-16 h-16 rounded-full mb-2"
-                />
-                <span class="font-medium text-gray-800">Jane Doe</span>
-                <span class="text-xs text-gray-500">Biology</span>
-            </div>
-            <div class="flex flex-col items-center text-center">
-                <img
-                    src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=facearea&facepad=3&w=64&h=64&q=80"
-                    alt="Friend avatar"
-                    class="w-16 h-16 rounded-full mb-2"
-                />
-                <span class="font-medium text-gray-800">John Smith</span>
-                <span class="text-xs text-gray-500">Physics</span>
-            </div>
-            <div class="flex flex-col items-center text-center">
-                <img
-                    src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=facearea&facepad=3&w=64&h=64&q=80"
-                    alt="Friend avatar"
-                    class="w-16 h-16 rounded-full mb-2"
-                />
-                <span class="font-medium text-gray-800">Emily Chen</span>
-                <span class="text-xs text-gray-500">Mathematics</span>
-            </div>
-            <div class="flex flex-col items-center text-center">
-                <img
-                    src="https://images.unsplash.com/photo-1500522144261-ea64433bbe27?auto=format&fit=facearea&facepad=3&w=64&h=64&q=80"
-                    alt="Friend avatar"
-                    class="w-16 h-16 rounded-full mb-2"
-                />
-                <span class="font-medium text-gray-800">Sophia Lee</span>
-                <span class="text-xs text-gray-500">Economics</span>
-            </div>
-        </div>
-    </section>
 </template>
